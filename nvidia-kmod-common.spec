@@ -29,7 +29,7 @@
 %endif
 
 Name:           nvidia-kmod-common
-Version:        455.28
+Version:        455.38
 Release:        1%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
@@ -118,6 +118,9 @@ fi ||:
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Mon Nov 02 2020 Simone Caronni <negativo17@gmail.com> - 3:455.38-1
+- Update to 455.38.
+
 * Mon Oct 12 2020 Simone Caronni <negativo17@gmail.com> - 3:455.28-1
 - Update to 455.28.
 
