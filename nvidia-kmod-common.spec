@@ -1,14 +1,3 @@
-%if 0%{?rhel} == 6
-# RHEL 6 does not have _udevrulesdir defined:
-%global _udevrulesdir   %{_prefix}/lib/udev/rules.d/
-%global _dracutopts     nouveau.modeset=0 rdblacklist=nouveau
-%global _dracutopts_rm  nomodeset vga=normal
-%global _dracut_conf_d	%{_sysconfdir}/dracut.conf.d
-%global _modprobe_d     %{_sysconfdir}/modprobe.d/
-# It's not _sbindir:
-%global _grubby         /sbin/grubby --grub --update-kernel=ALL
-%endif
-
 %if 0%{?rhel} == 7
 %global _dracutopts     nouveau.modeset=0 rd.driver.blacklist=nouveau nvidia-drm.modeset=1
 %global _dracutopts_rm  nomodeset gfxpayload=vga=normal
@@ -30,7 +19,7 @@
 
 Name:           nvidia-kmod-common
 Version:        455.45.01
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -43,10 +32,9 @@ Source21:       60-nvidia.rules
 Source24:       99-nvidia.conf
 
 # UDev rule location (_udevrulesdir) and systemd macros:
-%if 0%{?fedora} >= 30
+%if 0%{?fedora}
 BuildRequires:  systemd-rpm-macros
-%endif
-%if 0%{?fedora} == 29 || 0%{?rhel} >= 7
+%else
 BuildRequires:  systemd
 %endif
 
@@ -79,7 +67,6 @@ install -p -m 644 %{SOURCE21} %{buildroot}%{_udevrulesdir}
 
 %post
 %{_grubby} --args='%{_dracutopts}' --remove-args='%{_dracutopts_rm}' &>/dev/null
-%if 0%{?fedora} || 0%{?rhel} >= 7
 if [ ! -f /run/ostree-booted ]; then
   . %{_sysconfdir}/default/grub
   if [ -z "${GRUB_CMDLINE_LINUX}" ]; then
@@ -96,12 +83,10 @@ if [ ! -f /run/ostree-booted ]; then
     sed -i -e "s|^GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX=\"${GRUB_CMDLINE_LINUX}\"|g" %{_sysconfdir}/default/grub
   fi
 fi
-%endif
 
 %preun
 if [ "$1" -eq "0" ]; then
   %{_grubby} --remove-args='%{_dracutopts}' &>/dev/null
-%if 0%{?fedora} || 0%{?rhel} >= 7
   if [ ! -f /run/ostree-booted ]; then
     for param in %{_dracutopts}; do
       echo ${GRUB_CMDLINE_LINUX} | grep -q $param
@@ -109,7 +94,6 @@ if [ "$1" -eq "0" ]; then
     done
     sed -i -e "s|^GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX=\"${GRUB_CMDLINE_LINUX}\"|g" %{_sysconfdir}/default/grub
   fi
-%endif
 fi ||:
 
 %files
@@ -118,6 +102,9 @@ fi ||:
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Mon Dec 07 2020 Simone Caronni <negativo17@gmail.com> - 3:455.45.01-2
+- Remove CentOS/RHEL 6 support.
+
 * Wed Nov 18 2020 Simone Caronni <negativo17@gmail.com> - 3:455.45.01-1
 - Update to 455.45.01.
 
