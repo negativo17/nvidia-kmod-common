@@ -18,8 +18,8 @@
 %endif
 
 Name:           nvidia-kmod-common
-Version:        455.45.01
-Release:        2%{?dist}
+Version:        460.27.04
+Release:        1%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -102,6 +102,9 @@ fi ||:
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Sun Dec 20 2020 Simone Caronni <negativo17@gmail.com> - 3:460.27.04-1
+- Update to 460.27.04.
+
 * Mon Dec 07 2020 Simone Caronni <negativo17@gmail.com> - 3:455.45.01-2
 - Remove CentOS/RHEL 6 support.
 
