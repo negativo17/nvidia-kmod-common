@@ -18,7 +18,7 @@
 %endif
 
 Name:           nvidia-kmod-common
-Version:        460.39
+Version:        460.56
 Release:        1%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
@@ -102,6 +102,9 @@ fi ||:
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Mon Mar 01 2021 Simone Caronni <negativo17@gmail.com> - 3:460.56-1
+- Update to 460.56.
+
 * Wed Jan 27 2021 Simone Caronni <negativo17@gmail.com> - 3:460.39-1
 - Update to 460.39.
 
