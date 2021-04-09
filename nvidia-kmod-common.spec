@@ -17,8 +17,11 @@
 %global _grubby         %{_sbindir}/grubby --update-kernel=ALL
 %endif
 
+# gsp.bin: ELF 64-bit LSB executable, UCB RISC-V
+%global _binaries_in_noarch_packages_terminate_build 0
+
 Name:           nvidia-kmod-common
-Version:        460.67
+Version:        465.19.01
 Release:        1%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
@@ -27,6 +30,7 @@ URL:            http://www.nvidia.com/object/unix.html
 
 BuildArch:      noarch
 
+Source0:        %{name}-%{version}.tar.xz
 Source20:       nvidia.conf
 Source21:       60-nvidia.rules
 Source24:       99-nvidia.conf
@@ -39,6 +43,7 @@ BuildRequires:  systemd
 %endif
 
 Requires:       grubby
+Requires:       linux-firmware
 Requires:       nvidia-kmod = %{?epoch:%{epoch}:}%{version}
 Provides:       nvidia-kmod-common = %{?epoch:%{epoch}:}%{version}
 Obsoletes:      cuda-nvidia-kmod-common
@@ -48,11 +53,13 @@ This package provides the common files required by all NVIDIA kernel module
 package variants.
  
 %prep
+%autosetup
 
 %install
 mkdir -p %{buildroot}%{_udevrulesdir}
 mkdir -p %{buildroot}%{_modprobe_d}/
 mkdir -p %{buildroot}%{_dracut_conf_d}/
+mkdir -p %{buildroot}%{_prefix}/lib/firmware/nvidia/%{version}/
 
 # Blacklist nouveau and load nvidia-uvm:
 install -p -m 0644 %{SOURCE20} %{buildroot}%{_modprobe_d}/
@@ -64,6 +71,9 @@ install -p -m 0644 %{SOURCE24} %{buildroot}%{_dracut_conf_d}/
 # https://github.com/NVIDIA/nvidia-modprobe/blob/master/modprobe-utils/nvidia-modprobe-utils.h#L33-L46
 # https://github.com/negativo17/nvidia-driver/issues/27
 install -p -m 644 %{SOURCE21} %{buildroot}%{_udevrulesdir}
+
+# Firmware files
+install -p -m 644 firmware/* %{buildroot}%{_prefix}/lib/firmware/nvidia/%{version}
 
 %post
 %{_grubby} --args='%{_dracutopts}' --remove-args='%{_dracutopts_rm}' &>/dev/null
@@ -99,9 +109,13 @@ fi ||:
 %files
 %{_dracut_conf_d}/99-nvidia.conf
 %{_modprobe_d}/nvidia.conf
+%{_prefix}/lib/firmware/nvidia/%{version}
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Fri Apr 09 2021 Simone Caronni <negativo17@gmail.com> - 3:465.19.01-1
+- Update to 465.19.01.
+
 * Fri Mar 19 2021 Simone Caronni <negativo17@gmail.com> - 3:460.67-1
 - Update to 460.67.
 
