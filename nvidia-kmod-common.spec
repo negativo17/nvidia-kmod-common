@@ -22,7 +22,7 @@
 
 Name:           nvidia-kmod-common
 Version:        470.63.01
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -113,6 +113,9 @@ fi ||:
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Fri Aug 20 2021 Simone Caronni <negativo17@gmail.com> - 3:470.63.01-2
+- Enable complete power management.
+
 * Wed Aug 11 2021 Simone Caronni <negativo17@gmail.com> - 3:470.63.01-1
 - Update to 470.63.01.
 
