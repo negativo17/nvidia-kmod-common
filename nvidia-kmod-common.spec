@@ -2,7 +2,7 @@
 %global _dracutopts     nouveau.modeset=0 rd.driver.blacklist=nouveau nvidia-drm.modeset=1
 %global _dracutopts_rm  nomodeset gfxpayload=vga=normal
 %global _dracut_conf_d  %{_prefix}/lib/dracut/dracut.conf.d
-%global _modprobe_d     %{_prefix}/lib/modprobe.d/
+%global _modprobedir    %{_prefix}/lib/modprobe.d/
 %global _grubby         %{_sbindir}/grubby --update-kernel=ALL
 %endif
 
@@ -13,7 +13,6 @@
 # one:
 %global _dracutopts_rm  nomodeset gfxpayload=vga=normal nouveau.modeset=0 nvidia-drm.modeset=1
 %global _dracut_conf_d  %{_prefix}/lib/dracut/dracut.conf.d
-%global _modprobe_d     %{_prefix}/lib/modprobe.d/
 %global _grubby         %{_sbindir}/grubby --update-kernel=ALL
 %endif
 
@@ -22,7 +21,7 @@
 
 Name:           nvidia-kmod-common
 Version:        470.63.01
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -31,6 +30,7 @@ URL:            http://www.nvidia.com/object/unix.html
 BuildArch:      noarch
 
 Source0:        %{name}-%{version}.tar.xz
+Source19:       nvidia.conf.etc
 Source20:       nvidia.conf
 Source21:       60-nvidia.rules
 Source24:       99-nvidia.conf
@@ -57,12 +57,17 @@ package variants.
 
 %install
 mkdir -p %{buildroot}%{_udevrulesdir}
-mkdir -p %{buildroot}%{_modprobe_d}/
+mkdir -p %{buildroot}%{_modprobedir}/
 mkdir -p %{buildroot}%{_dracut_conf_d}/
 mkdir -p %{buildroot}%{_prefix}/lib/firmware/nvidia/%{version}/
 
+%if 0%{?fedora} >= 35
+# Nvidia modesetting support
+install -p -m 0644 %{SOURCE21} %{buildroot}%{_sysconfdir}/modprobe.d/
+%endif
+
 # Blacklist nouveau and load nvidia-uvm:
-install -p -m 0644 %{SOURCE20} %{buildroot}%{_modprobe_d}/
+install -p -m 0644 %{SOURCE20} %{buildroot}%{_modprobedir}/
 
 # Avoid Nvidia modules getting in the initrd:
 install -p -m 0644 %{SOURCE24} %{buildroot}%{_dracut_conf_d}/
@@ -108,11 +113,18 @@ fi ||:
 
 %files
 %{_dracut_conf_d}/99-nvidia.conf
-%{_modprobe_d}/nvidia.conf
+%{_modprobedir}/nvidia.conf
 %{_prefix}/lib/firmware/nvidia/%{version}
+%if 0%{?fedora} >= 35
+%config %{_sysconfdir}/modprobe.d/nvidia.conf
+%endif
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Fri Aug 20 2021 Simone Caronni <negativo17@gmail.com> - 3:470.63.01-3
+- SPEC file cleanup.
+- Enable modesetting by default for Fedora 35+
+
 * Fri Aug 20 2021 Simone Caronni <negativo17@gmail.com> - 3:470.63.01-2
 - Enable complete power management.
 
