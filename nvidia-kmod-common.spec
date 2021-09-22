@@ -63,7 +63,7 @@ mkdir -p %{buildroot}%{_prefix}/lib/firmware/nvidia/%{version}/
 
 %if 0%{?fedora} >= 35
 # Nvidia modesetting support
-install -p -m 0644 %{SOURCE21} %{buildroot}%{_sysconfdir}/modprobe.d/
+install -p -m 0644 -D %{SOURCE19} %{buildroot}%{_sysconfdir}/modprobe.d/nvidia.conf
 %endif
 
 # Blacklist nouveau and load nvidia-uvm:
