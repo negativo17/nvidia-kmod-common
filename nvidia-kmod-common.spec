@@ -123,6 +123,7 @@ fi ||:
 %changelog
 * Tue Nov 02 2021 Simone Caronni <negativo17@gmail.com> - 3:495.44-1
 - Update to 495.44.
+- Also disable bundling nvidia-peermem in initrd.
 
 * Tue Nov 02 2021 Simone Caronni <negativo17@gmail.com> - 3:470.82.00-1
 - Update to 470.82.00.
