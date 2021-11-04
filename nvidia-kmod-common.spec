@@ -7,10 +7,7 @@
 %endif
 
 %if 0%{?fedora} || 0%{?rhel} >= 8
-%global _dracutopts     rd.driver.blacklist=nouveau
-# Don't disable nouveau at boot. Just matching the driver with OutputClass in
-# the X.org configuration is enough to load the whole Nvidia stack or the Mesa
-# one:
+%global _dracutopts     rd.driver.blacklist=nouveau modprobe.blacklist=nouveau
 %global _dracutopts_rm  nomodeset gfxpayload=vga=normal nouveau.modeset=0 nvidia-drm.modeset=1
 %global _dracut_conf_d  %{_prefix}/lib/dracut/dracut.conf.d
 %global _grubby         %{_sbindir}/grubby --update-kernel=ALL
