@@ -1,5 +1,5 @@
 %if 0%{?rhel} == 7
-%global _dracutopts     nouveau.modeset=0 rd.driver.blacklist=nouveau nvidia-drm.modeset=1
+%global _dracutopts     nouveau.modeset=0 rd.driver.blacklist=nouveau modprobe.blacklist=nouveau nvidia-drm.modeset=1
 %global _dracutopts_rm  nomodeset gfxpayload=vga=normal
 %global _dracut_conf_d  %{_prefix}/lib/dracut/dracut.conf.d
 %global _modprobedir    %{_prefix}/lib/modprobe.d/
@@ -18,7 +18,7 @@
 
 Name:           nvidia-kmod-common
 Version:        495.44
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -118,6 +118,9 @@ fi ||:
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Sat Nov 06 2021 Simone Caronni <negativo17@gmail.com> - 3:495.44-2
+- Update configuration files and boot options.
+
 * Tue Nov 02 2021 Simone Caronni <negativo17@gmail.com> - 3:495.44-1
 - Update to 495.44.
 - Also disable bundling nvidia-peermem in initrd.
