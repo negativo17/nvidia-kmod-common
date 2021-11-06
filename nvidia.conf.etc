@@ -1,7 +1,6 @@
-# Nvidia modesetting support
+# Nvidia modesetting support. There is NO console graphical framebuffer (like
+# OSS drivers); this is only for Wayland support.
 
-# There is NO console graphical framebuffer (like OSS drivers); this is only for
-# Wayland support.
 # Set to 0 or comment to disable kernel modesetting support. This must be
 # disabled in case of Mosaic or SLI.
 
