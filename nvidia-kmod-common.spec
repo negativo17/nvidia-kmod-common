@@ -18,7 +18,7 @@
 
 Name:           nvidia-kmod-common
 Version:        495.44
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -27,7 +27,7 @@ URL:            http://www.nvidia.com/object/unix.html
 BuildArch:      noarch
 
 Source0:        %{name}-%{version}.tar.xz
-Source19:       nvidia.conf.etc
+Source19:       nvidia-modeset.conf
 Source20:       nvidia.conf
 Source21:       60-nvidia.rules
 Source24:       99-nvidia.conf
@@ -60,10 +60,10 @@ mkdir -p %{buildroot}%{_prefix}/lib/firmware/nvidia/%{version}/
 
 %if 0%{?fedora} >= 35
 # Nvidia modesetting support
-install -p -m 0644 -D %{SOURCE19} %{buildroot}%{_sysconfdir}/modprobe.d/nvidia.conf
+install -p -m 0644 -D %{SOURCE19} %{buildroot}%{_sysconfdir}/modprobe.d/nvidia-modeset.conf
 %endif
 
-# Blacklist nouveau and load nvidia-uvm:
+# Load nvidia-uvm, enable complete power management:
 install -p -m 0644 %{SOURCE20} %{buildroot}%{_modprobedir}/
 
 # Avoid Nvidia modules getting in the initrd:
@@ -82,7 +82,7 @@ install -p -m 644 firmware/* %{buildroot}%{_prefix}/lib/firmware/nvidia/%{versio
 if [ ! -f /run/ostree-booted ]; then
   . %{_sysconfdir}/default/grub
   if [ -z "${GRUB_CMDLINE_LINUX}" ]; then
-    echo GRUB_CMDLINE_LINUX="%{_dracutopts}" >> %{_sysconfdir}/default/grub
+    echo GRUB_CMDLINE_LINUX=\""%{_dracutopts}"\" >> %{_sysconfdir}/default/grub
   else
     for param in %{_dracutopts}; do
       echo ${GRUB_CMDLINE_LINUX} | grep -q $param
@@ -113,11 +113,17 @@ fi ||:
 %{_modprobedir}/nvidia.conf
 %{_prefix}/lib/firmware/nvidia/%{version}
 %if 0%{?fedora} >= 35
-%config %{_sysconfdir}/modprobe.d/nvidia.conf
+%config %{_sysconfdir}/modprobe.d/nvidia-modeset.conf
 %endif
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Sun Nov 07 2021 Simone Caronni <negativo17@gmail.com> - 3:495.44-3
+- Avoid duplication on modprobe configuration file names (second file in
+  /usr/lib/modprobe.d gets ignored). Thanks Jens Peters.
+- Fix issue with missing quotes in /etc/default/grub and multiple parameters.
+  Thanks Roshan Shariff.
+
 * Sat Nov 06 2021 Simone Caronni <negativo17@gmail.com> - 3:495.44-2
 - Update configuration files and boot options.
 
