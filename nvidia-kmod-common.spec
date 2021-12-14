@@ -17,8 +17,8 @@
 %global _binaries_in_noarch_packages_terminate_build 0
 
 Name:           nvidia-kmod-common
-Version:        495.44
-Release:        4%{?dist}
+Version:        495.46
+Release:        1%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -119,6 +119,9 @@ fi ||:
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Tue Dec 14 2021 Simone Caronni <negativo17@gmail.com> - 3:495.46-1
+- Update to 495.46.
+
 * Fri Dec 10 2021 Jamie Nguyen <jamien@nvidia.com> - 3:495.44-4
 - Source grub file before rewriting GRUB_CMDLINE_LINUX in preun. Without this,
   we are clearing out GRUB_CMDLINE_LINUX when this package gets removed.
