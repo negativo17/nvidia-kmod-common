@@ -18,7 +18,7 @@
 
 Name:           nvidia-kmod-common
 Version:        495.44
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -100,6 +100,7 @@ fi
 if [ "$1" -eq "0" ]; then
   %{_grubby} --remove-args='%{_dracutopts}' &>/dev/null
   if [ ! -f /run/ostree-booted ]; then
+    . %{_sysconfdir}/default/grub
     for param in %{_dracutopts}; do
       echo ${GRUB_CMDLINE_LINUX} | grep -q $param
       [ $? -eq 0 ] && GRUB_CMDLINE_LINUX="$(echo ${GRUB_CMDLINE_LINUX} | sed -e "s/$param//g")"
@@ -118,6 +119,10 @@ fi ||:
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Fri Dec 10 2021 Jamie Nguyen <jamien@nvidia.com> - 3:495.44-4
+- Source grub file before rewriting GRUB_CMDLINE_LINUX in preun. Without this,
+  we are clearing out GRUB_CMDLINE_LINUX when this package gets removed.
+
 * Sun Nov 07 2021 Simone Caronni <negativo17@gmail.com> - 3:495.44-3
 - Avoid duplication on modprobe configuration file names (second file in
   /usr/lib/modprobe.d gets ignored). Thanks Jens Peters.
