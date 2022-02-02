@@ -17,7 +17,7 @@
 %global _binaries_in_noarch_packages_terminate_build 0
 
 Name:           nvidia-kmod-common
-Version:        495.46
+Version:        510.47.03
 Release:        1%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
@@ -119,6 +119,9 @@ fi ||:
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Wed Feb 02 2022 Simone Caronni <negativo17@gmail.com> - 3:510.47.03-1
+- Update to 510.47.03.
+
 * Tue Dec 14 2021 Simone Caronni <negativo17@gmail.com> - 3:495.46-1
 - Update to 495.46.
 
