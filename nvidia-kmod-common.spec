@@ -1,5 +1,5 @@
 %if 0%{?rhel} == 7
-%global _dracutopts     nouveau.modeset=0 rd.driver.blacklist=nouveau modprobe.blacklist=nouveau nvidia-drm.modeset=1
+%global _dracutopts     nouveau.modeset=0 rd.driver.blacklist=nouveau modprobe.blacklist=nouveau
 %global _dracutopts_rm  nomodeset gfxpayload=vga=normal
 %global _dracut_conf_d  %{_prefix}/lib/dracut/dracut.conf.d
 %global _modprobedir    %{_prefix}/lib/modprobe.d/
@@ -8,7 +8,7 @@
 
 %if 0%{?fedora} || 0%{?rhel} >= 8
 %global _dracutopts     rd.driver.blacklist=nouveau modprobe.blacklist=nouveau
-%global _dracutopts_rm  nomodeset gfxpayload=vga=normal nouveau.modeset=0 nvidia-drm.modeset=1
+%global _dracutopts_rm  nomodeset gfxpayload=vga=normal nouveau.modeset=0
 %global _dracut_conf_d  %{_prefix}/lib/dracut/dracut.conf.d
 %global _grubby         %{_sbindir}/grubby --update-kernel=ALL
 %endif
@@ -18,7 +18,7 @@
 
 Name:           nvidia-kmod-common
 Version:        515.48.07
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -33,7 +33,7 @@ Source21:       60-nvidia.rules
 Source24:       99-nvidia.conf
 
 # UDev rule location (_udevrulesdir) and systemd macros:
-%if 0%{?fedora}
+%if 0%{?fedora} || 0%{?rhel} >= 8
 BuildRequires:  systemd-rpm-macros
 %else
 BuildRequires:  systemd
@@ -58,10 +58,8 @@ mkdir -p %{buildroot}%{_modprobedir}/
 mkdir -p %{buildroot}%{_dracut_conf_d}/
 mkdir -p %{buildroot}%{_prefix}/lib/firmware/nvidia/%{version}/
 
-%if 0%{?fedora} >= 35
 # Nvidia modesetting support
 install -p -m 0644 -D %{SOURCE19} %{buildroot}%{_sysconfdir}/modprobe.d/nvidia-modeset.conf
-%endif
 
 # Load nvidia-uvm, enable complete power management:
 install -p -m 0644 %{SOURCE20} %{buildroot}%{_modprobedir}/
@@ -113,12 +111,15 @@ fi ||:
 %{_dracut_conf_d}/99-nvidia.conf
 %{_modprobedir}/nvidia.conf
 %{_prefix}/lib/firmware/nvidia/%{version}
-%if 0%{?fedora} >= 35
 %config %{_sysconfdir}/modprobe.d/nvidia-modeset.conf
-%endif
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Thu Jun 09 2022 Simone Caronni <negativo17@gmail.com> - 3:515.48.07-2
+- Adjust conditionals.
+- Drop removal of nvidia-drm.modeset=1 from the kernel command line.
+- Add nvidia-drm.modeset=1 to the configuration file also on RHEL/CentOS.
+
 * Wed Jun 01 2022 Simone Caronni <negativo17@gmail.com> - 3:515.48.07-1
 - Update to 515.48.07.
 
