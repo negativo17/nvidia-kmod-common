@@ -17,8 +17,8 @@
 %global _binaries_in_noarch_packages_terminate_build 0
 
 Name:           nvidia-kmod-common
-Version:        515.48.07
-Release:        2%{?dist}
+Version:        515.57
+Release:        1%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -115,6 +115,9 @@ fi ||:
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Wed Jun 29 2022 Simone Caronni <negativo17@gmail.com> - 3:515.57-1
+- Update to 515.57.
+
 * Thu Jun 09 2022 Simone Caronni <negativo17@gmail.com> - 3:515.48.07-2
 - Adjust conditionals.
 - Drop removal of nvidia-drm.modeset=1 from the kernel command line.
