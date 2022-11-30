@@ -43,7 +43,7 @@ Requires:       grubby
 Requires:       linux-firmware
 Requires:       nvidia-kmod = %{?epoch:%{epoch}:}%{version}
 Provides:       nvidia-kmod-common = %{?epoch:%{epoch}:}%{version}
-Obsoletes:      cuda-nvidia-kmod-common
+Obsoletes:      cuda-nvidia-kmod-common < %{?epoch:%{epoch}:}%{version}
 
 %description
 This package provides the common files required by all NVIDIA kernel module
