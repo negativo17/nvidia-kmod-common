@@ -13,8 +13,9 @@
 %global _grubby         %{_sbindir}/grubby --update-kernel=ALL
 %endif
 
-# gsp.bin: ELF 64-bit LSB executable, UCB RISC-V
+# gsp_*.bin: ELF 64-bit LSB executable, UCB RISC-V
 %global _binaries_in_noarch_packages_terminate_build 0
+%global __strip /bin/true
 
 Name:           nvidia-kmod-common
 Version:        525.60.11
