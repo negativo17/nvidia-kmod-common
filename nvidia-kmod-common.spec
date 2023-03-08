@@ -1,6 +1,6 @@
 %if 0%{?rhel} == 7
 %global _dracutopts     nouveau.modeset=0 rd.driver.blacklist=nouveau modprobe.blacklist=nouveau
-%global _dracutopts_rm  nomodeset gfxpayload=vga=normal
+%global _dracutopts_rm  nomodeset gfxpayload=vga=normal nvidia-drm.modeset=1
 %global _dracut_conf_d  %{_prefix}/lib/dracut/dracut.conf.d
 %global _modprobedir    %{_prefix}/lib/modprobe.d/
 %global _grubby         %{_sbindir}/grubby --update-kernel=ALL
@@ -8,7 +8,7 @@
 
 %if 0%{?fedora} || 0%{?rhel} >= 8
 %global _dracutopts     rd.driver.blacklist=nouveau modprobe.blacklist=nouveau
-%global _dracutopts_rm  nomodeset gfxpayload=vga=normal nouveau.modeset=0
+%global _dracutopts_rm  nomodeset gfxpayload=vga=normal nouveau.modeset=0 nvidia-drm.modeset=1
 %global _dracut_conf_d  %{_prefix}/lib/dracut/dracut.conf.d
 %global _grubby         %{_sbindir}/grubby --update-kernel=ALL
 %endif
@@ -19,7 +19,7 @@
 
 Name:           nvidia-kmod-common
 Version:        525.89.02
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -116,6 +116,9 @@ fi ||:
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Wed Mar 08 2023 Simone Caronni <negativo17@gmail.com> - 3:525.89.02-2
+- Drop workaround for simpledrm support (fixed in 525.60.11).
+
 * Fri Feb 10 2023 Simone Caronni <negativo17@gmail.com> - 3:525.89.02-1
 - Update to 525.89.02.
 
