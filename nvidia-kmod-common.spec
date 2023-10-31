@@ -19,7 +19,7 @@
 
 Name:           nvidia-kmod-common
 Version:        545.29.02
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -116,6 +116,10 @@ fi ||:
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Sat Nov 04 2023 Simone Caronni <negativo17@gmail.com> - 3:545.29.02-2
+- First part of fix for issue
+  https://github.com/negativo17/nvidia-kmod-common/issues/11.
+
 * Tue Oct 31 2023 Simone Caronni <negativo17@gmail.com> - 3:545.29.02-1
 - Update to 545.29.02.
 
