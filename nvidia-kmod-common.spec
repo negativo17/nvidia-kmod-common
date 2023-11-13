@@ -19,7 +19,7 @@
 
 Name:           nvidia-kmod-common
 Version:        545.29.02
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -28,6 +28,7 @@ URL:            http://www.nvidia.com/object/unix.html
 BuildArch:      noarch
 
 Source0:        %{name}-%{version}.tar.xz
+Source18:       nvidia-main.conf
 Source19:       nvidia-modeset.conf
 Source20:       nvidia.conf
 Source21:       60-nvidia.rules
@@ -55,26 +56,26 @@ package variants.
 %autosetup
 
 %install
-mkdir -p %{buildroot}%{_udevrulesdir}
-mkdir -p %{buildroot}%{_modprobedir}/
-mkdir -p %{buildroot}%{_dracut_conf_d}/
-mkdir -p %{buildroot}%{_prefix}/lib/firmware/nvidia/%{version}/
+# Choice of kernel module type:
+install -p -m 0644 -D %{SOURCE18} %{buildroot}%{_sysconfdir}/nvidia.conf
 
-# Nvidia modesetting support
+# Nvidia modesetting support:
 install -p -m 0644 -D %{SOURCE19} %{buildroot}%{_sysconfdir}/modprobe.d/nvidia-modeset.conf
 
 # Load nvidia-uvm, enable complete power management:
-install -p -m 0644 %{SOURCE20} %{buildroot}%{_modprobedir}/
+install -p -m 0644 -D %{SOURCE20} %{buildroot}%{_modprobedir}/nvidia.conf
 
 # Avoid Nvidia modules getting in the initrd:
-install -p -m 0644 %{SOURCE24} %{buildroot}%{_dracut_conf_d}/
+install -p -m 0644 -D %{SOURCE24} %{buildroot}%{_dracut_conf_d}/99-nvidia.conf
 
-# UDev rules:
+# UDev rules
 # https://github.com/NVIDIA/nvidia-modprobe/blob/master/modprobe-utils/nvidia-modprobe-utils.h#L33-L46
+# https://github.com/negativo17/nvidia-kmod-common/issues/11
 # https://github.com/negativo17/nvidia-driver/issues/27
-install -p -m 644 %{SOURCE21} %{buildroot}%{_udevrulesdir}
+install -p -m 644 -D %{SOURCE21} %{buildroot}%{_udevrulesdir}/60-nvidia.rules
 
-# Firmware files
+# Firmware files:
+mkdir -p %{buildroot}%{_prefix}/lib/firmware/nvidia/%{version}/
 install -p -m 644 firmware/* %{buildroot}%{_prefix}/lib/firmware/nvidia/%{version}
 
 %post
@@ -114,9 +115,13 @@ fi ||:
 %{_modprobedir}/nvidia.conf
 %{_prefix}/lib/firmware/nvidia/%{version}
 %config %{_sysconfdir}/modprobe.d/nvidia-modeset.conf
+%config %{_sysconfdir}/nvidia.conf
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Mon Nov 13 2023 Simone Caronni <negativo17@gmail.com> - 3:545.29.02-4
+- Allow installing proprietary or open source kernel modules.
+
 * Sat Nov 04 2023 Simone Caronni <negativo17@gmail.com> - 3:545.29.02-3
 - Second part of the fix for issue
   https://github.com/negativo17/nvidia-kmod-common/issues/11.
