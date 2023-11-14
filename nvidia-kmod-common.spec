@@ -19,7 +19,7 @@
 
 Name:           nvidia-kmod-common
 Version:        545.29.02
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -28,7 +28,7 @@ URL:            http://www.nvidia.com/object/unix.html
 BuildArch:      noarch
 
 Source0:        %{name}-%{version}.tar.xz
-Source18:       nvidia-main.conf
+Source18:       kernel.conf
 Source19:       nvidia-modeset.conf
 Source20:       nvidia.conf
 Source21:       60-nvidia.rules
@@ -57,7 +57,7 @@ package variants.
 
 %install
 # Choice of kernel module type:
-install -p -m 0644 -D %{SOURCE18} %{buildroot}%{_sysconfdir}/nvidia.conf
+install -p -m 0644 -D %{SOURCE18} %{buildroot}%{_sysconfdir}/nvidia/kernel.conf
 
 # Nvidia modesetting support:
 install -p -m 0644 -D %{SOURCE19} %{buildroot}%{_sysconfdir}/modprobe.d/nvidia-modeset.conf
@@ -115,10 +115,13 @@ fi ||:
 %{_modprobedir}/nvidia.conf
 %{_prefix}/lib/firmware/nvidia/%{version}
 %config %{_sysconfdir}/modprobe.d/nvidia-modeset.conf
-%config %{_sysconfdir}/nvidia.conf
+%config %{_sysconfdir}/nvidia/kernel.conf
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Tue Nov 14 2023 Simone Caronni <negativo17@gmail.com> - 3:545.29.02-5
+- Update location of configuration file for kernel module variant.
+
 * Mon Nov 13 2023 Simone Caronni <negativo17@gmail.com> - 3:545.29.02-4
 - Allow installing proprietary or open source kernel modules.
 
