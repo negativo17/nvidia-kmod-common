@@ -1,16 +1,14 @@
 %if 0%{?rhel} == 7
-%global _dracutopts     nouveau.modeset=0 rd.driver.blacklist=nouveau modprobe.blacklist=nouveau
+%global _dracutopts_in  nouveau.modeset=0 rd.driver.blacklist=nouveau modprobe.blacklist=nouveau
 %global _dracutopts_rm  nomodeset gfxpayload=vga=normal nvidia-drm.modeset=1
 %global _dracut_conf_d  %{_prefix}/lib/dracut/dracut.conf.d
 %global _modprobedir    %{_prefix}/lib/modprobe.d/
-%global _grubby         %{_sbindir}/grubby --update-kernel=ALL
 %endif
 
 %if 0%{?fedora} || 0%{?rhel} >= 8
-%global _dracutopts     rd.driver.blacklist=nouveau modprobe.blacklist=nouveau
+%global _dracutopts_in  rd.driver.blacklist=nouveau modprobe.blacklist=nouveau
 %global _dracutopts_rm  nomodeset gfxpayload=vga=normal nouveau.modeset=0 nvidia-drm.modeset=1 initcall_blacklist=simpledrm_platform_driver_init
 %global _dracut_conf_d  %{_prefix}/lib/dracut/dracut.conf.d
-%global _grubby         %{_sbindir}/grubby --update-kernel=ALL
 %endif
 
 # gsp_*.bin: ELF 64-bit LSB executable, UCB RISC-V
@@ -19,7 +17,7 @@
 
 Name:           nvidia-kmod-common
 Version:        550.54.14
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -28,6 +26,7 @@ URL:            http://www.nvidia.com/object/unix.html
 BuildArch:      noarch
 
 Source0:        %{name}-%{version}.tar.xz
+Source17:       nvidia-boot-update
 Source18:       kernel.conf
 Source19:       nvidia-modeset.conf
 Source20:       nvidia.conf
@@ -41,7 +40,6 @@ BuildRequires:  systemd-rpm-macros
 BuildRequires:  systemd
 %endif
 
-Requires:       grubby
 # Owns /usr/lib/firmware:
 Requires:       linux-firmware
 Requires:       nvidia-modprobe
@@ -57,6 +55,13 @@ package variants.
 %autosetup
 
 %install
+# Script for post/preun tasks
+install -p -m 0755 -D %{SOURCE17} %{buildroot}%{_sbindir}/nvidia-boot-update
+sed -i \
+    -e 's/_dracutopts_in/%{_dracutopts_in}/g' \
+    -e 's/_dracutopts_rm/%{_dracutopts_rm}/g' \
+    %{buildroot}%{_sbindir}/nvidia-boot-update
+
 # Choice of kernel module type:
 install -p -m 0644 -D %{SOURCE18} %{buildroot}%{_sysconfdir}/nvidia/kernel.conf
 
@@ -80,46 +85,28 @@ mkdir -p %{buildroot}%{_prefix}/lib/firmware/nvidia/%{version}/
 install -p -m 644 firmware/* %{buildroot}%{_prefix}/lib/firmware/nvidia/%{version}
 
 %post
-%{_grubby} --args='%{_dracutopts}' --remove-args='%{_dracutopts_rm}' &>/dev/null
-if [ ! -f /run/ostree-booted ]; then
-  . %{_sysconfdir}/default/grub
-  if [ -z "${GRUB_CMDLINE_LINUX}" ]; then
-    echo GRUB_CMDLINE_LINUX=\""%{_dracutopts}"\" >> %{_sysconfdir}/default/grub
-  else
-    for param in %{_dracutopts}; do
-      echo ${GRUB_CMDLINE_LINUX} | grep -q $param
-      [ $? -eq 1 ] && GRUB_CMDLINE_LINUX="${GRUB_CMDLINE_LINUX} ${param}"
-    done
-    for param in %{_dracutopts_rm}; do
-      echo ${GRUB_CMDLINE_LINUX} | grep -q $param
-      [ $? -eq 0 ] && GRUB_CMDLINE_LINUX="$(echo ${GRUB_CMDLINE_LINUX} | sed -e "s/$param//g")"
-    done
-    sed -i -e "s|^GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX=\"${GRUB_CMDLINE_LINUX}\"|g" %{_sysconfdir}/default/grub
-  fi
-fi
+%{_sbindir}/nvidia-boot-update post
 
 %preun
 if [ "$1" -eq "0" ]; then
-  %{_grubby} --remove-args='%{_dracutopts}' &>/dev/null
-  if [ ! -f /run/ostree-booted ]; then
-    . %{_sysconfdir}/default/grub
-    for param in %{_dracutopts}; do
-      echo ${GRUB_CMDLINE_LINUX} | grep -q $param
-      [ $? -eq 0 ] && GRUB_CMDLINE_LINUX="$(echo ${GRUB_CMDLINE_LINUX} | sed -e "s/$param//g")"
-    done
-    sed -i -e "s|^GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX=\"${GRUB_CMDLINE_LINUX}\"|g" %{_sysconfdir}/default/grub
-  fi
+  {_sbindir}/nvidia-boot-update preun
 fi ||:
 
 %files
 %{_dracut_conf_d}/99-nvidia.conf
 %{_modprobedir}/nvidia.conf
 %{_prefix}/lib/firmware/nvidia/%{version}
+%{_sbindir}/nvidia-boot-update
 %config %{_sysconfdir}/modprobe.d/nvidia-modeset.conf
 %config %{_sysconfdir}/nvidia/kernel.conf
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Mon Mar 11 2024 Simone Caronni <negativo17@gmail.com> - 3:550.54.14-2
+- Add support for installing drivers without a configured bootloader (i.e.
+  kickstart case).
+- Add support for sdboot.
+
 * Sun Mar 03 2024 Simone Caronni <negativo17@gmail.com> - 3:550.54.14-1
 - Update to 550.54.14.
 
