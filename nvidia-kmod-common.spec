@@ -18,7 +18,7 @@
 %global __strip /bin/true
 
 Name:           nvidia-kmod-common
-Version:        550.40.07
+Version:        550.54.14
 Release:        1%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
@@ -119,6 +119,9 @@ fi ||:
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Sun Mar 03 2024 Simone Caronni <negativo17@gmail.com> - 3:550.54.14-1
+- Update to 550.54.14.
+
 * Tue Feb 06 2024 Simone Caronni <negativo17@gmail.com> - 3:550.40.07-1
 - Update to 550.40.07.
 
