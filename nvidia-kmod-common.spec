@@ -42,6 +42,7 @@ BuildRequires:  systemd
 %endif
 
 Requires:       grubby
+# Owns /usr/lib/firmware:
 Requires:       linux-firmware
 Requires:       nvidia-modprobe
 Requires:       nvidia-kmod = %{?epoch:%{epoch}:}%{version}
