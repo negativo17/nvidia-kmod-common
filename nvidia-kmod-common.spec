@@ -17,7 +17,7 @@
 
 Name:           nvidia-kmod-common
 Version:        555.42.02
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -89,7 +89,7 @@ install -p -m 644 firmware/* %{buildroot}%{_prefix}/lib/firmware/nvidia/%{versio
 
 %preun
 if [ "$1" -eq "0" ]; then
-  {_sbindir}/nvidia-boot-update preun
+  %{_sbindir}/nvidia-boot-update preun
 fi ||:
 
 %files
@@ -102,6 +102,9 @@ fi ||:
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Fri May 31 2024 Simone Caronni <negativo17@gmail.com> - 3:555.42.02-2
+- Fix typo in preun scriptlet.
+
 * Wed May 22 2024 Simone Caronni <negativo17@gmail.com> - 3:555.42.02-1
 - Update to 555.42.02.
 
