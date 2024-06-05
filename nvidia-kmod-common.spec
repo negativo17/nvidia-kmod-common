@@ -1,15 +1,6 @@
-%if 0%{?rhel} == 7
-%global _dracutopts_in  nouveau.modeset=0 rd.driver.blacklist=nouveau modprobe.blacklist=nouveau
-%global _dracutopts_rm  nomodeset gfxpayload=vga=normal nvidia-drm.modeset=1
-%global _dracut_conf_d  %{_prefix}/lib/dracut/dracut.conf.d
-%global _modprobedir    %{_prefix}/lib/modprobe.d/
-%endif
-
-%if 0%{?fedora} || 0%{?rhel} >= 8
 %global _dracutopts_in  rd.driver.blacklist=nouveau modprobe.blacklist=nouveau
 %global _dracutopts_rm  nomodeset gfxpayload=vga=normal nouveau.modeset=0 nvidia-drm.modeset=1 initcall_blacklist=simpledrm_platform_driver_init
 %global _dracut_conf_d  %{_prefix}/lib/dracut/dracut.conf.d
-%endif
 
 # gsp_*.bin: ELF 64-bit LSB executable, UCB RISC-V
 %global _binaries_in_noarch_packages_terminate_build 0
@@ -34,11 +25,7 @@ Source21:       60-nvidia.rules
 Source24:       99-nvidia.conf
 
 # UDev rule location (_udevrulesdir) and systemd macros:
-%if 0%{?fedora} || 0%{?rhel} >= 8
 BuildRequires:  systemd-rpm-macros
-%else
-BuildRequires:  systemd
-%endif
 
 # Owns /usr/lib/firmware:
 Requires:       linux-firmware
