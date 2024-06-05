@@ -1,16 +1,6 @@
 #!/bin/sh
 
 
-# EL7 (grub2)
-#
-# kernel options: grub.cfg + grubenv
-# manually update: /etc/default/grub
-# grubby updates everything
-# grub.cfg:
-#   - UEFI: /etc/grub2-efi.cfg -> /boot/efi/EFI/<os>/grub.cfg
-#   - BIOS: /etc/grub2.cfg -> /boot/grub2/grub.cfg
-
-
 # EL8 (grub2 with BootLoaderSpec patches)
 #
 # kernel options: grub.cfg + grubenv + /etc/kernel/cmdline
@@ -69,7 +59,6 @@ Tool to add or remove kernel command line options required for proper operation 
 Its main use is to be called from the %post/%preun scripts of the Nvidia driver packages, but it can also be used in other contexts, for example in a kickstart file after the drivers have been already installed.
 
 Boot loaders supported:
-  - grub 2 (el7)
   - grub 2 with BootLoaderSpec patches (el8, el9, fedora)
   - systemd-boot (fedora)
 
