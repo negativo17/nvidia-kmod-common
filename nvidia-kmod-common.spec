@@ -8,7 +8,7 @@
 
 Name:           nvidia-kmod-common
 Version:        560.35.03
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -84,11 +84,14 @@ fi ||:
 %{_modprobedir}/nvidia.conf
 %{_prefix}/lib/firmware/nvidia/%{version}
 %{_sbindir}/nvidia-boot-update
-%config %{_sysconfdir}/modprobe.d/nvidia-modeset.conf
-%config %{_sysconfdir}/nvidia/kernel.conf
+%config(noreplace) %{_sysconfdir}/modprobe.d/nvidia-modeset.conf
+%config(noreplace) %{_sysconfdir}/nvidia/kernel.conf
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Fri Oct 11 2024 Simone Caronni <negativo17@gmail.com> - 3:560.35.03-2
+- Fix configuration file replacement (#14).
+
 * Wed Aug 21 2024 Simone Caronni <negativo17@gmail.com> - 3:560.35.03-1
 - Update to 560.35.03.
 
