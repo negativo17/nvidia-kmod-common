@@ -7,8 +7,8 @@
 %global __strip /bin/true
 
 Name:           nvidia-kmod-common
-Version:        560.35.03
-Release:        2%{?dist}
+Version:        565.57.01
+Release:        1%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -89,6 +89,9 @@ fi ||:
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Wed Oct 23 2024 Simone Caronni <negativo17@gmail.com> - 3:565.57.01-1
+- Update to 565.57.01.
+
 * Fri Oct 11 2024 Simone Caronni <negativo17@gmail.com> - 3:560.35.03-2
 - Fix configuration file replacement (#14).
 
