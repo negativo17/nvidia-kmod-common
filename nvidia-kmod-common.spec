@@ -7,8 +7,8 @@
 %global __strip /bin/true
 
 Name:           nvidia-kmod-common
-Version:        565.77
-Release:        2%{?dist}
+Version:        570.86.15
+Release:        1%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -89,6 +89,9 @@ fi ||:
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Mon Jan 27 2025 Simone Caronni <negativo17@gmail.com> - 3:570.86.15-1
+- Update to 570.86.15.
+
 * Wed Dec 25 2024 Simone Caronni <negativo17@gmail.com> - 3:565.77-2
 - Run nvidia-modprobe only on add/bind (thanks os369510).
 
