@@ -1,5 +1,3 @@
-%global _dracutopts_in  rd.driver.blacklist=nouveau modprobe.blacklist=nouveau
-%global _dracutopts_rm  nomodeset gfxpayload=vga=normal nouveau.modeset=0 nvidia-drm.modeset=1 initcall_blacklist=simpledrm_platform_driver_init
 %global _dracut_conf_d  %{_prefix}/lib/dracut/dracut.conf.d
 
 # gsp_*.bin: ELF 64-bit LSB executable, UCB RISC-V
@@ -8,7 +6,7 @@
 
 Name:           nvidia-kmod-common
 Version:        570.86.16
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -44,10 +42,6 @@ package variants.
 %install
 # Script for post/preun tasks
 install -p -m 0755 -D %{SOURCE17} %{buildroot}%{_sbindir}/nvidia-boot-update
-sed -i \
-    -e 's/_dracutopts_in/%{_dracutopts_in}/g' \
-    -e 's/_dracutopts_rm/%{_dracutopts_rm}/g' \
-    %{buildroot}%{_sbindir}/nvidia-boot-update
 
 # Choice of kernel module type:
 install -p -m 0644 -D %{SOURCE18} %{buildroot}%{_sysconfdir}/nvidia/kernel.conf
@@ -89,6 +83,9 @@ fi ||:
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Wed Feb 12 2025 Simone Caronni <negativo17@gmail.com> - 3:570.86.16-3
+- Update nvidia-boot-update script.
+
 * Wed Feb 12 2025 Simone Caronni <negativo17@gmail.com> - 3:570.86.16-2
 - Also add a softep on nvidia-uvm, required for some GPUs.
 
