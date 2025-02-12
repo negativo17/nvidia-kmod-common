@@ -8,7 +8,7 @@
 
 Name:           nvidia-kmod-common
 Version:        570.86.16
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -89,6 +89,9 @@ fi ||:
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Wed Feb 12 2025 Simone Caronni <negativo17@gmail.com> - 3:570.86.16-2
+- Also add a softep on nvidia-uvm, required for some GPUs.
+
 * Fri Jan 31 2025 Simone Caronni <negativo17@gmail.com> - 3:570.86.16-1
 - Update to 570.86.16.
 
