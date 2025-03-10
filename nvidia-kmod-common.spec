@@ -6,7 +6,7 @@
 
 Name:           nvidia-kmod-common
 Version:        570.124.04
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -41,7 +41,7 @@ package variants.
 
 %install
 # Script for post/preun tasks
-install -p -m 0755 -D %{SOURCE17} %{buildroot}%{_sbindir}/nvidia-boot-update
+install -p -m 0755 -D %{SOURCE17} %{buildroot}%{_bindir}/nvidia-boot-update
 
 # Choice of kernel module type:
 install -p -m 0644 -D %{SOURCE18} %{buildroot}%{_sysconfdir}/nvidia/kernel.conf
@@ -66,23 +66,26 @@ mkdir -p %{buildroot}%{_prefix}/lib/firmware/nvidia/%{version}/
 install -p -m 644 firmware/* %{buildroot}%{_prefix}/lib/firmware/nvidia/%{version}
 
 %post
-%{_sbindir}/nvidia-boot-update post
+%{_bindir}/nvidia-boot-update post
 
 %preun
 if [ "$1" -eq "0" ]; then
-  %{_sbindir}/nvidia-boot-update preun
+  %{_bindir}/nvidia-boot-update preun
 fi ||:
 
 %files
 %{_dracut_conf_d}/99-nvidia.conf
 %{_modprobedir}/nvidia.conf
 %{_prefix}/lib/firmware/nvidia/%{version}
-%{_sbindir}/nvidia-boot-update
+%{_bindir}/nvidia-boot-update
 %config(noreplace) %{_sysconfdir}/modprobe.d/nvidia-modeset.conf
 %config(noreplace) %{_sysconfdir}/nvidia/kernel.conf
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Mon Mar 10 2025 Simone Caronni <negativo17@gmail.com> - 3:570.124.04-2
+- Move nvidia-boot-update to _bindir.
+
 * Fri Feb 28 2025 Simone Caronni <negativo17@gmail.com> - 3:570.124.04-1
 - Update to 570.124.04.
 
