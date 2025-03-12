@@ -2,7 +2,7 @@
 
 # gsp_*.bin: ELF 64-bit LSB executable, UCB RISC-V
 %global _binaries_in_noarch_packages_terminate_build 0
-%global __strip /bin/true
+%global __brp_strip %{nil}
 
 Name:           nvidia-kmod-common
 Version:        570.124.04
