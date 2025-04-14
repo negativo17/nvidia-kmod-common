@@ -1,12 +1,10 @@
-%global _dracut_conf_d  %{_prefix}/lib/dracut/dracut.conf.d
-
 # gsp_*.bin: ELF 64-bit LSB executable, UCB RISC-V
 %global _binaries_in_noarch_packages_terminate_build 0
 %global __brp_strip %{nil}
 
 Name:           nvidia-kmod-common
 Version:        575.64
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -15,12 +13,10 @@ URL:            http://www.nvidia.com/object/unix.html
 BuildArch:      noarch
 
 Source0:        %{name}-%{version}.tar.xz
-Source17:       nvidia-boot-update
 Source18:       kernel.conf
 Source19:       nvidia-modeset.conf
 Source20:       nvidia.conf
 Source21:       60-nvidia.rules
-Source24:       99-nvidia.conf
 
 # UDev rule location (_udevrulesdir) and systemd macros:
 BuildRequires:  systemd-rpm-macros
@@ -38,9 +34,6 @@ package variants.
 %autosetup
 
 %install
-# Script for post/preun tasks
-install -p -m 0755 -D %{SOURCE17} %{buildroot}%{_bindir}/nvidia-boot-update
-
 # Choice of kernel module type:
 install -p -m 0644 -D %{SOURCE18} %{buildroot}%{_sysconfdir}/nvidia/kernel.conf
 
@@ -49,9 +42,6 @@ install -p -m 0644 -D %{SOURCE19} %{buildroot}%{_sysconfdir}/modprobe.d/nvidia-m
 
 # Load nvidia-uvm, enable complete power management:
 install -p -m 0644 -D %{SOURCE20} %{buildroot}%{_modprobedir}/nvidia.conf
-
-# Avoid Nvidia modules getting in the initrd:
-install -p -m 0644 -D %{SOURCE24} %{buildroot}%{_dracut_conf_d}/99-nvidia.conf
 
 # UDev rules
 # https://github.com/NVIDIA/nvidia-modprobe/blob/master/modprobe-utils/nvidia-modprobe-utils.h#L33-L46
@@ -63,26 +53,27 @@ install -p -m 644 -D %{SOURCE21} %{buildroot}%{_udevrulesdir}/60-nvidia.rules
 mkdir -p %{buildroot}%{_prefix}/lib/firmware/nvidia/%{version}/
 install -p -m 644 firmware/* %{buildroot}%{_prefix}/lib/firmware/nvidia/%{version}
 
-%post
-%{_bindir}/nvidia-boot-update post
-
-%preun
-if [ "$1" -eq "0" ]; then
+%pre
+# Remove the kernel command line adjustments one last time when doing an upgrade
+# from a version that was still setting up the command line parameters:
+if [ "$1" -eq "2" ] && [ -x %{_bindir}/nvidia-boot-update ]; then
   %{_bindir}/nvidia-boot-update preun
 fi ||:
 
 %files
-%{_dracut_conf_d}/99-nvidia.conf
 %{_modprobedir}/nvidia.conf
 %dir %{_prefix}/lib/firmware
 %dir %{_prefix}/lib/firmware/nvidia
 %{_prefix}/lib/firmware/nvidia/%{version}
-%{_bindir}/nvidia-boot-update
 %config(noreplace) %{_sysconfdir}/modprobe.d/nvidia-modeset.conf
 %config(noreplace) %{_sysconfdir}/nvidia/kernel.conf
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Wed Jun 25 2025 Simone Caronni <negativo17@gmail.com> - 3:575.64-3
+- Modules are now in the initrd, drop all bootloader / kernel command line
+  manipulation.
+
 * Wed Jun 25 2025 Simone Caronni <negativo17@gmail.com> - 3:575.64-2
 - Also blacklist nova-core.
 
