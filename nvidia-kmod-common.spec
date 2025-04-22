@@ -25,8 +25,6 @@ Source24:       99-nvidia.conf
 # UDev rule location (_udevrulesdir) and systemd macros:
 BuildRequires:  systemd-rpm-macros
 
-# Owns /usr/lib/firmware:
-Requires:       linux-firmware
 Requires:       nvidia-modprobe
 Requires:       nvidia-kmod = %{?epoch:%{epoch}:}%{version}
 Provides:       nvidia-kmod-common = %{?epoch:%{epoch}:}%{version}
@@ -76,6 +74,8 @@ fi ||:
 %files
 %{_dracut_conf_d}/99-nvidia.conf
 %{_modprobedir}/nvidia.conf
+%dir %{_prefix}/lib/firmware
+%dir %{_prefix}/lib/firmware/nvidia
 %{_prefix}/lib/firmware/nvidia/%{version}
 %{_bindir}/nvidia-boot-update
 %config(noreplace) %{_sysconfdir}/modprobe.d/nvidia-modeset.conf
