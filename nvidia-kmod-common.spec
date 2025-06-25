@@ -6,7 +6,7 @@
 
 Name:           nvidia-kmod-common
 Version:        575.64
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -83,6 +83,9 @@ fi ||:
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Wed Jun 25 2025 Simone Caronni <negativo17@gmail.com> - 3:575.64-2
+- Also blacklist nova-core.
+
 * Wed Jun 18 2025 Simone Caronni <negativo17@gmail.com> - 3:575.64-1
 - Update to 575.64.
 
