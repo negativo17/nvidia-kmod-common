@@ -53,7 +53,7 @@
 #   - update options in /etc/kernel/cmdline
 #   - cover both UEFI and BIOS case
 
-CMDLINE_ARGS_NVIDIA="rd.driver.blacklist=nouveau"
+CMDLINE_ARGS_NVIDIA="rd.driver.blacklist=nouveau rd.driver.blacklist=nova-core"
 CMDLINE_ARGS_ALWAYS_REMOVE="nomodeset gfxpayload=vga=normal nouveau.modeset=0 nvidia-drm.modeset=1 nvidia-drm.fbdev=1 modprobe.blacklist=nouveau initcall_blacklist=simpledrm_platform_driver_init"
 
 print_usage() {
