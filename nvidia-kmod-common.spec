@@ -63,6 +63,9 @@ install -p -m 644 -D %{SOURCE21} %{buildroot}%{_udevrulesdir}/60-nvidia.rules
 mkdir -p %{buildroot}%{_prefix}/lib/firmware/nvidia/%{version}/
 install -p -m 644 firmware/* %{buildroot}%{_prefix}/lib/firmware/nvidia/%{version}
 
+# Bug report script
+install -p -m 755 -D nvidia-bug-report.sh %{buildroot}%{_bindir}/nvidia-bug-report.sh
+
 %post
 %{_bindir}/nvidia-boot-update post
 
@@ -72,6 +75,7 @@ if [ "$1" -eq "0" ]; then
 fi ||:
 
 %files
+%{_bindir}/nvidia-bug-report.sh
 %{_dracut_conf_d}/99-nvidia.conf
 %{_modprobedir}/nvidia.conf
 %dir %{_prefix}/lib/firmware
@@ -85,6 +89,7 @@ fi ||:
 %changelog
 * Wed Oct 01 2025 Simone Caronni <negativo17@gmail.com> - 3:580.95.05-1
 - Update to 580.95.05.
+- Move nvidia-bug-report.sh in nvidia-kmod-common.
 
 * Thu Sep 11 2025 Simone Caronni <negativo17@gmail.com> - 3:580.82.09-1
 - Update to 580.82.09.
