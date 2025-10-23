@@ -6,7 +6,7 @@
 
 Name:           nvidia-kmod-common
 Version:        580.95.05
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -87,6 +87,9 @@ fi ||:
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Thu Oct 23 2025 Simone Caronni <negativo17@gmail.com> - 3:580.95.05-2
+- Fix EL8 bootloater manipulation.
+
 * Wed Oct 01 2025 Simone Caronni <negativo17@gmail.com> - 3:580.95.05-1
 - Update to 580.95.05.
 - Move nvidia-bug-report.sh in nvidia-kmod-common.
