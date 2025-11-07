@@ -5,8 +5,8 @@
 %global __brp_strip %{nil}
 
 Name:           nvidia-kmod-common
-Version:        580.95.05
-Release:        2%{?dist}
+Version:        580.105.08
+Release:        1%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -87,6 +87,9 @@ fi ||:
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Fri Nov 07 2025 Simone Caronni <negativo17@gmail.com> - 3:580.105.08-1
+- Update to 580.105.08.
+
 * Thu Oct 23 2025 Simone Caronni <negativo17@gmail.com> - 3:580.95.05-2
 - Fix EL8 bootloater manipulation.
 
