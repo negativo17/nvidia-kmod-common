@@ -5,7 +5,7 @@
 %global __brp_strip %{nil}
 
 Name:           nvidia-kmod-common
-Version:        580.105.08
+Version:        590.44.01
 Release:        1%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
@@ -16,7 +16,6 @@ BuildArch:      noarch
 
 Source0:        %{name}-%{version}.tar.xz
 Source17:       nvidia-boot-update
-Source18:       kernel.conf
 Source19:       nvidia-modeset.conf
 Source20:       nvidia.conf
 Source21:       60-nvidia.rules
@@ -40,9 +39,6 @@ package variants.
 %install
 # Script for post/preun tasks
 install -p -m 0755 -D %{SOURCE17} %{buildroot}%{_bindir}/nvidia-boot-update
-
-# Choice of kernel module type:
-install -p -m 0644 -D %{SOURCE18} %{buildroot}%{_sysconfdir}/nvidia/kernel.conf
 
 # Nvidia modesetting support:
 install -p -m 0644 -D %{SOURCE19} %{buildroot}%{_sysconfdir}/modprobe.d/nvidia-modeset.conf
@@ -83,10 +79,13 @@ fi ||:
 %{_prefix}/lib/firmware/nvidia/%{version}
 %{_bindir}/nvidia-boot-update
 %config(noreplace) %{_sysconfdir}/modprobe.d/nvidia-modeset.conf
-%config(noreplace) %{_sysconfdir}/nvidia/kernel.conf
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Fri Dec 05 2025 Simone Caronni <negativo17@gmail.com> - 3:590.44.01-1
+- Update to 590.44.01.
+- Drop proprietary modules support (only required for vGPU).
+
 * Fri Nov 07 2025 Simone Caronni <negativo17@gmail.com> - 3:580.105.08-1
 - Update to 580.105.08.
 
