@@ -5,7 +5,7 @@
 %global __brp_strip %{nil}
 
 Name:           nvidia-kmod-common
-Version:        590.44.01
+Version:        590.48.01
 Release:        1%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
@@ -82,6 +82,9 @@ fi ||:
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Thu Dec 18 2025 Simone Caronni <negativo17@gmail.com> - 3:590.48.01-1
+- Update to 590.48.01.
+
 * Fri Dec 05 2025 Simone Caronni <negativo17@gmail.com> - 3:590.44.01-1
 - Update to 590.44.01.
 - Drop proprietary modules support (only required for vGPU).
