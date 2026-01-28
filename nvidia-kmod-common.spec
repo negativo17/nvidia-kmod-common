@@ -16,7 +16,6 @@ BuildArch:      noarch
 
 Source0:        %{name}-%{version}.tar.xz
 Source17:       nvidia-boot-update
-Source19:       nvidia-modeset.conf
 Source20:       nvidia.conf
 Source21:       60-nvidia.rules
 Source24:       99-nvidia.conf
@@ -39,9 +38,6 @@ package variants.
 %install
 # Script for post/preun tasks
 install -p -m 0755 -D %{SOURCE17} %{buildroot}%{_bindir}/nvidia-boot-update
-
-# Nvidia modesetting support:
-install -p -m 0644 -D %{SOURCE19} %{buildroot}%{_sysconfdir}/modprobe.d/nvidia-modeset.conf
 
 # Load nvidia-uvm, enable complete power management:
 install -p -m 0644 -D %{SOURCE20} %{buildroot}%{_modprobedir}/nvidia.conf
@@ -78,7 +74,6 @@ fi ||:
 %dir %{_prefix}/lib/firmware/nvidia
 %{_prefix}/lib/firmware/nvidia/%{version}
 %{_bindir}/nvidia-boot-update
-%config(noreplace) %{_sysconfdir}/modprobe.d/nvidia-modeset.conf
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
