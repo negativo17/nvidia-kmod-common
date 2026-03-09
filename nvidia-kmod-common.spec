@@ -6,7 +6,7 @@
 
 Name:           nvidia-kmod-common
 Version:        595.45.04
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -77,6 +77,9 @@ fi ||:
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Mon Mar 09 2026 Simone Caronni <negativo17@gmail.com> - 3:595.45.04-2
+- Use kernel suspend notifiers.
+
 * Thu Mar 05 2026 Simone Caronni <negativo17@gmail.com> - 3:595.45.04-1
 - Update to 595.45.04.
 
