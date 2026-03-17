@@ -6,7 +6,7 @@
 
 Name:           nvidia-kmod-common
 Version:        595.45.04
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -27,6 +27,8 @@ Requires:       nvidia-modprobe
 Requires:       nvidia-kmod = %{?epoch:%{epoch}:}%{version}
 Provides:       nvidia-kmod-common = %{?epoch:%{epoch}:}%{version}
 Obsoletes:      cuda-nvidia-kmod-common < %{?epoch:%{epoch}:}%{version}
+
+Requires:       nvidia-driver-selinux
 
 %description
 This package provides the common files required by all NVIDIA kernel module
@@ -77,6 +79,9 @@ fi ||:
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Tue Mar 17 2026 Simone Caronni <negativo17@gmail.com> - 3:595.45.04-3
+- Require SELinux module.
+
 * Mon Mar 09 2026 Simone Caronni <negativo17@gmail.com> - 3:595.45.04-2
 - Use kernel suspend notifiers.
 
