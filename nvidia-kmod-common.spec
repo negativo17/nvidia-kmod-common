@@ -6,7 +6,7 @@
 
 Name:           nvidia-kmod-common
 Version:        595.45.04
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -29,7 +29,7 @@ Requires:       nvidia-kmod = %{?epoch:%{epoch}:}%{version}
 Provides:       nvidia-kmod-common = %{?epoch:%{epoch}:}%{version}
 Obsoletes:      cuda-nvidia-kmod-common < %{?epoch:%{epoch}:}%{version}
 
-Requires:       nvidia-driver-selinux
+Requires:       (nvidia-driver-selinux if selinux-policy-targeted)
 
 %description
 This package provides the common files required by all NVIDIA kernel module
@@ -84,6 +84,9 @@ fi ||:
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Wed Mar 18 2026 Simone Caronni <negativo17@gmail.com> - 3:595.45.04-4
+- SELinux module should be required only if SELinux is installed.
+
 * Tue Mar 17 2026 Simone Caronni <negativo17@gmail.com> - 3:595.45.04-3
 - Require SELinux module.
 
