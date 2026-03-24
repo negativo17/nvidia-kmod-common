@@ -5,8 +5,8 @@
 %global __brp_strip %{nil}
 
 Name:           nvidia-kmod-common
-Version:        595.45.04
-Release:        4%{?dist}
+Version:        595.58.03
+Release:        1%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -84,6 +84,9 @@ fi ||:
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Tue Mar 24 2026 Simone Caronni <negativo17@gmail.com> - 3:595.58.03-1
+- Update to 595.58.03.
+
 * Wed Mar 18 2026 Simone Caronni <negativo17@gmail.com> - 3:595.45.04-4
 - SELinux module should be required only if SELinux is installed.
 
