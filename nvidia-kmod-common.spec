@@ -6,7 +6,7 @@
 
 Name:           nvidia-kmod-common
 Version:        615.71.09
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Common file for NVIDIA's proprietary driver kernel modules
 Epoch:          3
 License:        NVIDIA License
@@ -48,9 +48,6 @@ install -p -m 0644 -D %{SOURCE20} %{buildroot}%{_modprobedir}/nvidia.conf
 install -p -m 0644 -D %{SOURCE24} %{buildroot}%{_dracut_conf_d}/99-nvidia.conf
 
 # UDev rules
-# https://github.com/NVIDIA/nvidia-modprobe/blob/master/modprobe-utils/nvidia-modprobe-utils.h#L33-L46
-# https://github.com/negativo17/nvidia-kmod-common/issues/11
-# https://github.com/negativo17/nvidia-driver/issues/27
 install -p -m 644 -D %{SOURCE21} %{buildroot}%{_udevrulesdir}/60-nvidia.rules
 
 # Firmware files:
@@ -75,6 +72,10 @@ fi ||:
 %{_udevrulesdir}/60-nvidia.rules
 
 %changelog
+* Tue Sep 22 2026 Simone Caronni <negativo17@gmail.com> - 3:615.71.09-2
+- Review udev rules and cover the specific case of unprivileged containers trying
+  to run CUDA (https://anatase.org/).
+
 * Thu Sep 10 2026 Simone Caronni <negativo17@gmail.com> - 3:615.71.09-1
 - Update to 615.71.09.
 
