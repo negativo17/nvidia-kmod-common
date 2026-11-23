@@ -53,21 +53,21 @@
 #   - update options in /etc/kernel/cmdline
 #   - cover both UEFI and BIOS case
 
-CMDLINE_ARGS_NVIDIA="rd.driver.blacklist=nouveau,nova-core"
-CMDLINE_ARGS_ALWAYS_REMOVE="nomodeset nouveau.modeset=0 nvidia-drm.modeset=1 nvidia-drm.fbdev=1 modprobe.blacklist=nouveau"
+# rd.driver.blacklist is not needed, nouveau and nova-core are left out of the
+# initrd and blacklisted through the modprobe configuration.
+CMDLINE_ARGS_REMOVE="rd.driver.blacklist=nouveau,nova-core nomodeset nouveau.modeset=0 nvidia-drm.modeset=1 nvidia-drm.fbdev=1 modprobe.blacklist=nouveau"
 
 print_usage() {
 cat <<EOF
-Tool to add or remove kernel command line options required for proper operation of the Nvidia driver.
-Its main use is to be called from the %post/%preun scripts of the Nvidia driver packages, but it can also be used in other contexts, for example in a kickstart file after the drivers have been already installed.
+Tool to remove kernel command line options that are obsolete or conflicting with the Nvidia driver.
+Its main use is to be called from the %post script of the Nvidia driver packages.
 
 Boot loaders supported:
   - grub 2 with BootLoaderSpec patches (el8, el9, fedora)
   - systemd-boot (fedora)
 
-Usage: nvidia-boot-update post|preun
-    post        Adjust necessary kernel command line options
-    preun       Remove all kernel command line options
+Usage: nvidia-boot-update post
+    post        Remove kernel command line options
 
 EOF
 }
@@ -94,60 +94,37 @@ check() {
       # systemd-boot is installed, different path than Grub 2 with BootLoaderSpec patches
       BLS_ENTRIES=/boot/efi/loader/entries
 
-    else
-
-      echo "Nvidia driver setup: no bootloader configured. Please run 'nvidia-boot-update post' manually."
-
     fi
 
   fi
 }
 
-# Print the kernel command line $1 without the parameters in $2 and with the
-# ones in $3. Comma separated values are lists, both in the command line and in
-# the parameters: "key=b" is found in, and removed from, "key=a,b", and adding
-# "key=a,b" to "key=a" only adds "key=b".
-edit_args() {
-  printf '%s\n' "$1" | awk -v remove="$2" -v add="$3" '
-    # Find the flag k (empty v) or the value v of k, deleting it if del is set.
-    function find(k, v, del,    j, x, n, l, rest, hit, found) {
-      for (j = 1; j <= nargs; j++) {
-        if (v == "") {
-          if (a[j] == k) {
-            found = 1
-            if (del) a[j] = ""
-          }
-        } else if (index(a[j], k "=") == 1) {
-          n = split(substr(a[j], length(k) + 2), l, ",")
-          rest = ""; hit = 0
-          for (x = 1; x <= n; x++) {
-            if (l[x] == v) {
-              found = hit = 1
-              if (del) continue
-            }
-            rest = rest (rest == "" ? "" : ",") l[x]
-          }
-          if (del && hit) a[j] = (rest == "") ? "" : k "=" rest
-        }
-      }
-      return found
-    }
-    # Run find() on a parameter, return what of it was not found.
-    function each(param, del,    k, n, l, x, missing) {
-      k = param; sub(/=.*/, "", k)
-      if (k == param) return find(k, "", del) ? "" : param
-      n = split(substr(param, length(k) + 2), l, ",")
-      missing = ""
-      for (x = 1; x <= n; x++)
-        if (!find(k, l[x], del)) missing = missing (missing == "" ? "" : ",") l[x]
-      return (missing == "") ? "" : k "=" missing
-    }
+# Print the kernel command line $1 without the parameters in $2. Comma separated
+# values are lists: "key=a,b" removes "a" and "b" from "key=a,b,c".
+remove_args() {
+  printf '%s\n' "$1" | awk -v remove="$2" '
     {
       nargs = split($0, a, " ")
       n = split(remove, p, " ")
-      for (i = 1; i <= n; i++) each(p[i], 1)
-      n = split(add, p, " ")
-      for (i = 1; i <= n; i++) if ((m = each(p[i], 0)) != "") a[++nargs] = m
+      for (i = 1; i <= n; i++) {
+        k = p[i]; sub(/=.*/, "", k)
+        if (k == p[i]) {
+          for (j = 1; j <= nargs; j++) if (a[j] == k) a[j] = ""
+          continue
+        }
+        m = split(substr(p[i], length(k) + 2), v, ",")
+        for (j = 1; j <= nargs; j++) {
+          if (index(a[j], k "=") != 1) continue
+          c = split(substr(a[j], length(k) + 2), l, ",")
+          rest = ""; hit = 0
+          for (x = 1; x <= c; x++) {
+            for (y = 1; y <= m; y++) if (l[x] == v[y]) break
+            if (y <= m) hit = 1
+            else rest = rest (rest == "" ? "" : ",") l[x]
+          }
+          if (hit) a[j] = (rest == "") ? "" : k "=" rest
+        }
+      }
       out = ""
       for (i = 1; i <= nargs; i++) if (a[i] != "") out = out (out == "" ? "" : " ") a[i]
       print out
@@ -159,21 +136,16 @@ sed_escape() {
   printf '%s\n' "$1" | sed -e 's/[|&\\]/\\&/g'
 }
 
-# Remove the parameters in $1 and add the ones in $2 everywhere the kernel
-# command line is stored.
-update() {
+post() {
 
   # Edit GRUB configuration file
   if [ -n "${GRUB_CFG}" ]; then
 
-    args=$(sed_escape "$(edit_args "${GRUB_CMDLINE_LINUX}" "$1" "$2")")
-    if grep -q '^GRUB_CMDLINE_LINUX=' /etc/default/grub; then
-      sed -i -e "s|^GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX=\"${args}\"|" /etc/default/grub
-    else
-      echo "GRUB_CMDLINE_LINUX=\"${args}\"" >> /etc/default/grub
+    args=$(remove_args "${GRUB_CMDLINE_LINUX}" "${CMDLINE_ARGS_REMOVE}")
+    if [ "${args}" != "${GRUB_CMDLINE_LINUX}" ]; then
+      sed -i -e "s|^GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX=\"$(sed_escape "${args}")\"|" /etc/default/grub
+      grub2-mkconfig -o "${GRUB_CFG}" >/dev/null 2>&1
     fi
-
-    grub2-mkconfig -o "${GRUB_CFG}" >/dev/null 2>&1
 
   fi
 
@@ -182,27 +154,25 @@ update() {
 
     for config_file in "${BLS_ENTRIES}"/*.conf; do
       grep -q '^options' "${config_file}" 2>/dev/null || continue
-      args=$(sed_escape "$(edit_args "$(sed -n -e 's/^options[[:space:]]*//p' "${config_file}")" "$1" "$2")")
-      sed -i -e "s|^options.*|options ${args}|" "${config_file}"
+      options=$(sed -n -e 's/^options[[:space:]]*//p' "${config_file}")
+      args=$(remove_args "${options}" "${CMDLINE_ARGS_REMOVE}")
+      [ "${args}" != "${options}" ] && sed -i -e "s|^options.*|options $(sed_escape "${args}")|" "${config_file}"
     done
 
   fi
 
   # Edit /etc/kernel/cmdline
   if [ -f /etc/kernel/cmdline ]; then
-    args=$(edit_args "$(cat /etc/kernel/cmdline)" "$1" "$2")
-    printf '%s\n' "${args}" > /etc/kernel/cmdline
+    cmdline=$(cat /etc/kernel/cmdline)
+    args=$(remove_args "${cmdline}" "${CMDLINE_ARGS_REMOVE}")
+    [ "${args}" != "${cmdline}" ] && printf '%s\n' "${args}" > /etc/kernel/cmdline
   fi
 }
 
 case "$1" in
   post)
     check
-    update "${CMDLINE_ARGS_ALWAYS_REMOVE}" "${CMDLINE_ARGS_NVIDIA}"
-    ;;
-  preun)
-    check
-    update "${CMDLINE_ARGS_NVIDIA}" ""
+    post
     ;;
   *)
     print_usage
